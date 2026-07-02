@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components/macro'
 
-import { getRipeness } from '../../../utils/ripenessGuide'
+import { getRipeness, useRipeness } from '../../../utils/ripenessGuide'
 import EatTheWeedsLogo from './icons/EatTheWeeds.png'
 import ForagingTexasLogo from './icons/ForagingTexas.png'
 import FruitipediaLogo from './icons/Fruitipedia.png'
@@ -118,6 +118,8 @@ const SimpleTypeItem = styled.div`
 `
 
 const TypesHeader = ({ types, openable }) => {
+  const ripenessData = useRipeness()
+
   if (!openable) {
     return (
       <div>
@@ -146,7 +148,7 @@ const TypesHeader = ({ types, openable }) => {
 
         // Ripeness lives inside each type's own panel (issue #1128) so a
         // location with several fruit shows the right guide under each one.
-        const ripeness = getRipeness(type)
+        const ripeness = getRipeness(type, ripenessData)
         const hasUrls = Object.keys(type.urls).length > 0
 
         if (ripeness || hasUrls) {
