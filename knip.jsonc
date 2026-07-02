@@ -1,6 +1,8 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
   "ignoreFiles": [
+    // Jest test files (run via `yarn test`, not part of the build graph)
+    "src/**/*.test.{js,jsx,ts,tsx}",
     // Packaged yarn binary
     ".yarn/releases/yarn-1.22.22.cjs",
     // Android app

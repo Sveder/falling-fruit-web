@@ -1,12 +1,14 @@
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components/macro'
 
+import { getRipeness } from '../../../utils/ripenessGuide'
 import EatTheWeedsLogo from './icons/EatTheWeeds.png'
 import ForagingTexasLogo from './icons/ForagingTexas.png'
 import FruitipediaLogo from './icons/Fruitipedia.png'
 import UrbanMushroomsLogo from './icons/UrbanMushrooms.png'
 import USDALogo from './icons/USDA.svg'
 import WikipediaLogo from './icons/Wikipedia.svg'
+import RipenessGuide from './RipenessGuide'
 import {
   TypesAccordion,
   TypesAccordionButton,
@@ -142,13 +144,18 @@ const TypesHeader = ({ types, openable }) => {
           />
         )
 
-        if (Object.keys(type.urls).length > 0) {
-          // At least 1 URL
+        // Ripeness lives inside each type's own panel (issue #1128) so a
+        // location with several fruit shows the right guide under each one.
+        const ripeness = getRipeness(type)
+        const hasUrls = Object.keys(type.urls).length > 0
+
+        if (ripeness || hasUrls) {
           return (
             <TypesAccordionItem key={type.id}>
               <TypesAccordionButton>{typeTitle}</TypesAccordionButton>
               <TypesAccordionPanel>
-                <ResourceList urls={type.urls} />
+                {ripeness && <RipenessGuide type={type} ripeness={ripeness} />}
+                {hasUrls && <ResourceList urls={type.urls} />}
               </TypesAccordionPanel>
             </TypesAccordionItem>
           )
