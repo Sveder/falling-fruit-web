@@ -87,7 +87,16 @@ const FormattedSocials = ({ facebook, instagram, x }) => {
 
 const ShareTheHarvestTable = () => {
   const [filterText, setFilterText] = React.useState('')
-  const { t } = useTranslation()
+  // Remembered sort so we can restore it after remounting on a language change
+  // (the table is keyed on the language to re-sort with the new collator).
+  const [sort, setSort] = React.useState({ id: 'country', asc: true })
+  const { t, i18n } = useTranslation()
+
+  // Sort text columns using the active locale's alphabet (e.g. Czech orders
+  // diacritics inline and "ch" after "h") instead of default code-point order.
+  const collator = new Intl.Collator(i18n.language, { numeric: true })
+  const localeSort = (selector) => (rowA, rowB) =>
+    collator.compare(String(selector(rowA)), String(selector(rowB)))
 
   const translatedCountries = {
     Australia: t('pages.sharing.countries.australia'),
@@ -113,33 +122,43 @@ const ShareTheHarvestTable = () => {
     'United States': t('pages.sharing.countries.united_states'),
   }
 
+  const countrySelector = (row) =>
+    translatedCountries[row.country] || row.country || '-'
+  const stateSelector = (row) => row.state ?? '-'
+  const citySelector = (row) => row.city ?? '-'
+  const nameSelector = (row) => row.name
+
   const columns = [
     {
       id: 'country',
       name: t('pages.sharing.heading.country'),
-      selector: (row) => translatedCountries[row.country] || row.country || '-',
+      selector: countrySelector,
       sortable: true,
+      sortFunction: localeSort(countrySelector),
       wrap: true,
     },
     {
       id: 'state',
       name: t('pages.sharing.heading.state'),
-      selector: (row) => row.state ?? '-',
+      selector: stateSelector,
       sortable: true,
+      sortFunction: localeSort(stateSelector),
       wrap: true,
     },
     {
       id: 'city',
       name: t('pages.sharing.heading.city'),
-      selector: (row) => row.city ?? '-',
+      selector: citySelector,
       sortable: true,
+      sortFunction: localeSort(citySelector),
       wrap: true,
     },
     {
       id: 'name',
       name: t('glossary.name'),
-      selector: (row) => row.name,
+      selector: nameSelector,
       sortable: true,
+      sortFunction: localeSort(nameSelector),
       grow: 2.5,
       format: FormattedOrganization,
       wrap: true,
@@ -167,9 +186,16 @@ const ShareTheHarvestTable = () => {
 
   return (
     <DataTable
+      // Remount on language change so the columns re-sort with the new locale's
+      // collator; the remembered sort and filter text are restored below.
+      key={i18n.language}
       columns={columns}
       data={filteredData}
-      defaultSortFieldId={'country'}
+      defaultSortFieldId={sort.id}
+      defaultSortAsc={sort.asc}
+      onSort={(column, sortDirection) =>
+        setSort({ id: column.id, asc: sortDirection === 'asc' })
+      }
       subHeader
       subHeaderComponent={
         <Input
