@@ -434,6 +434,14 @@
     "you_observed": "You observed this location on {{date}}",
     "you_reviewed": "You reviewed this location on {{date}}"
   },
+  "ripeness": {
+    "heading": "When is it ripe?",
+    "off_tree": "Off the tree",
+    "disclaimer": "Auto-generated guidance — it may contain mistakes, so double-check before eating.",
+    "report": "Report a mistake",
+    "report_subject": "Ripeness guide correction: {{taxon}}",
+    "report_body": "Please describe what is wrong with the ripeness guide for {{taxon}} (type #{{id}}):\n\n"
+  },
   "save_location_to_list": {
     "add_new_list": "Add new list",
     "delete_list_confirm": "Delete list \"{{name}}\"?",
